@@ -1,20 +1,15 @@
 import re
 from datetime import datetime
 import logging
-from flask import jsonify # Necesario para devolver respuestas JSON
-from contextlib import contextmanager # Para crear el context manager db_session
-import pymysql.cursors # Necesario para DictCursor dentro de db_session
+from flask import jsonify 
+from contextlib import contextmanager 
+import pymysql.cursors 
 
-# Importar la función de conexión a la base de datos
-# Asegúrate de que utils/db.py exista y contenga la función conectar_db()
 from utils.db import conectar_db
 
-# Configuración básica del logger
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
-# --- Funciones de Ayuda ---
 
 def api_response(data=None, message="Operación exitosa.", status_code=200, error=None):
     """
@@ -60,7 +55,6 @@ def log_accion(tipo_accion, mensaje, nivel='info'):
     elif nivel == 'error':
         logger.error(f"{tipo_accion}: {mensaje}")
 
-# --- Context Manager para Conexiones a la Base de Datos ---
 @contextmanager
 def db_session():
     """
@@ -71,17 +65,15 @@ def db_session():
     cursor = None
     try:
         conn = conectar_db()
-        # Usamos DictCursor aquí para que los resultados de las consultas sean diccionarios
         cursor = conn.cursor(pymysql.cursors.DictCursor) 
-        yield conn, cursor # Retorna la conexión y el cursor para ser usados en el bloque 'with'
-        conn.commit() # Si todo va bien dentro del bloque 'with', se hace commit
+        yield conn, cursor 
+        conn.commit() 
     except Exception as e:
         if conn:
-            conn.rollback() # Si hay un error, se hace rollback para deshacer cambios pendientes
+            conn.rollback()
         logger.error(f"Error en la sesión de base de datos: {e}")
-        raise # Relanzar la excepción para que la ruta (o un manejador de errores global) la capture
+        raise
     finally:
-        # Asegurarse de que el cursor y la conexión se cierren siempre
         if cursor:
             cursor.close()
         if conn:
