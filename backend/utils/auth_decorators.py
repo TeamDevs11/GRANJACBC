@@ -31,7 +31,7 @@ def get_user_role_from_db(user_id):
             conn.close()
     return rol_name
 
-def admin_required():
+def Administrador_requerido():
     def wrapper(fn):
         @wraps(fn)
         def decorator(*args, **kwargs):
@@ -40,19 +40,19 @@ def admin_required():
             claims = get_jwt()
             user_roles_from_jwt = claims.get("roles", [])
 
-            if "Admin" not in user_roles_from_jwt:
+            if "Administrador" not in user_roles_from_jwt:
                 user_role_from_db = get_user_role_from_db(current_user_id)
-                if user_role_from_db == "Admin":
-                    user_roles_from_jwt.append("Admin")
+                if user_role_from_db == "Administrador":
+                    user_roles_from_jwt.append("Administrador")
             
-            if "Admin" not in user_roles_from_jwt:
+            if "Administrador" not in user_roles_from_jwt:
                 return jsonify({"mensaje": "Acceso denegado: Se requiere rol de Administrador."}), 403
 
             return fn(*args, **kwargs)
         return decorator
     return wrapper
 
-def admin_or_employee_required():
+def Administrador_o_Empleado_requerido():
     def wrapper(fn):
         @wraps(fn)
         def decorator(*args, **kwargs):
@@ -61,12 +61,12 @@ def admin_or_employee_required():
             claims = get_jwt()
             user_roles_from_jwt = claims.get("roles", [])
 
-            if not ("Admin" in user_roles_from_jwt or "Empleado" in user_roles_from_jwt):
+            if not ("Administrador" in user_roles_from_jwt or "Empleado" in user_roles_from_jwt):
                 user_role_from_db = get_user_role_from_db(current_user_id)
-                if user_role_from_db in ["Admin", "Empleado"]:
+                if user_role_from_db in ["Administrador", "Empleado"]:
                     user_roles_from_jwt.append(user_role_from_db)
 
-            if not ("Admin" in user_roles_from_jwt or "Empleado" in user_roles_from_jwt):
+            if not ("Administrador" in user_roles_from_jwt or "Empleado" in user_roles_from_jwt):
                 return jsonify({"mensaje": "Acceso denegado: Se requiere rol de Administrador o Empleado."}), 403
 
             return fn(*args, **kwargs)

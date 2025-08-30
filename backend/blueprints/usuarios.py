@@ -3,7 +3,7 @@ import pymysql.cursors
 import bcrypt
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from utils.db import conectar_db
-from utils.auth_decorators import admin_required, admin_or_employee_required, jwt_auth_required
+from utils.auth_decorators import Administrador_requerido, Administrador_o_Empleado_requerido, jwt_auth_required
 from utils.helpers import api_response, db_session, limpiar_string, es_email_valido
 
 
@@ -12,7 +12,7 @@ usuarios_bp = Blueprint('usuarios_bp', __name__)
 SALT_ROUNDS = 12
 
 # Funciones Auxiliares para Roles 
-def get_role_name_by_id(id_rol):
+def obtener_nombre_de_rol_por_id(id_rol):
     conn = None
     cursor = None
     try:
@@ -31,7 +31,7 @@ def get_role_name_by_id(id_rol):
         if conn:
             conn.close()
 
-def get_role_id_by_name(nombre_rol):
+def obtener_identificación_de_rol_por_nombre(nombre_rol):
     conn = None
     cursor = None
     try:
@@ -285,7 +285,7 @@ def obtener_perfil():
 
 @usuarios_bp.route('/usuarios', methods=['GET'])
 @jwt_required()
-@admin_required() # solo tiene actorizacion el admin
+@Administrador_requerido() # solo tiene actorizacion el admin
 def Lista_usuarios():
     """
     Obtiene una lista de todos los usuarios registrados (solo Admin).
@@ -414,7 +414,7 @@ def actualiza_perfil(id_usuario):
 # ruta eliminar usuario
 @usuarios_bp.route('/usuarios/<int:id_usuario>', methods=['DELETE'])
 @jwt_required()
-@admin_required() # solo el admin tiene actorizacion a esta ruta 
+@Administrador_requerido() # solo el admin tiene actorizacion a esta ruta 
 def elimina_usuario(id_usuario):
     """
     Elimina un usuario (Solo Admin).
@@ -538,7 +538,7 @@ def actualiza_contrasena(id_usuario):
 # ruta para actualizar los roles de los usuarios 
 @usuarios_bp.route('/usuarios/<int:id_usuario>/rol', methods=['PUT'])
 @jwt_required()
-@admin_required() # solo el admin tiene acceso a esta ruta 
+@Administrador_requerido() # solo el admin tiene acceso a esta ruta 
 def actualiza_rol(id_usuario):
     """
     Actualiza el rol de un usuario (Solo Admin).
@@ -610,7 +610,7 @@ def actualiza_rol(id_usuario):
 # ruta para obtener la lista de todos los roles de usuarios disponible 
 @usuarios_bp.route('/roles', methods=['GET'])
 @jwt_required()
-@admin_required() # solo admin tienen acceso a esta ruta 
+@Administrador_requerido() # solo admin tienen acceso a esta ruta 
 def lista_roles():
     """
     Obtiene una lista de todos los roles de usuario disponibles (Solo Admin).

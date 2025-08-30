@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 import pymysql.cursors
 from utils.db import conectar_db
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from utils.auth_decorators import admin_required, admin_or_employee_required
+from utils.auth_decorators import Administrador_requerido, Administrador_o_Empleado_requerido
 from utils.helpers import api_response, db_session, limpiar_string
 
 
@@ -12,7 +12,7 @@ inventarios_bp = Blueprint('inventarios_bp', __name__)
 
 @inventarios_bp.route('/<int:id_producto>/stock', methods=['PATCH'])
 @jwt_required()
-@admin_or_employee_required() # Solo administradores o empleados pueden ajustar el stock
+@Administrador_o_Empleado_requerido() # Solo administradores o empleados pueden ajustar el stock
 def actualizar_stock_producto(id_producto):
     """
     Actualiza el stock de un producto específico.
